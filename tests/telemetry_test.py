@@ -1706,6 +1706,36 @@ class NodeStatsRecorderTests(TestCase):
             telemetry.NodeStatsRecorder(telemetry_params, cluster_name="remote", client=client, metrics_store=metrics_store)
 
 
+class TransformStatsTests(TestCase):
+    def test_negative_sample_interval_forbidden(self):
+        clients = {"default": Client(), "cluster_b": Client()}
+        cfg = create_config()
+        metrics_store = metrics.EsMetricsStore(cfg)
+        telemetry_params = {
+            "ccr-stats-sample-interval": -1 * random.random()
+        }
+        with self.assertRaisesRegex(exceptions.SystemSetupError,
+                                    r"The telemetry parameter 'transform-stats-sample-interval' must be greater than zero but was .*\."):
+            telemetry.CcrStats(telemetry_params, clients, metrics_store)
+
+    def test_wrong_cluster_name_in_transform_stats_indices_forbidden(self):
+        clients = {"default": Client(), "cluster_b": Client()}
+        cfg = create_config()
+        metrics_store = metrics.EsMetricsStore(cfg)
+        telemetry_params = {
+            "ccr-stats-indices":{
+                "default": ["leader"],
+                "wrong_cluster_name": ["follower"]
+            }
+        }
+        with self.assertRaisesRegex(exceptions.SystemSetupError,
+                                    r"The telemetry parameter 'ccr-stats-indices' must be a JSON Object with keys matching "
+                                    r"the cluster names \[{}] specified in --target-hosts "
+                                    r"but it had \[wrong_cluster_name\].".format(",".join(sorted(clients.keys())))
+                                    ):
+            telemetry.CcrStats(telemetry_params, clients, metrics_store)
+
+
 class ClusterEnvironmentInfoTests(TestCase):
     @mock.patch("esrally.metrics.EsMetricsStore.add_meta_info")
     def test_stores_cluster_level_metrics_on_attach(self, metrics_store_add_meta_info):

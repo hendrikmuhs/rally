@@ -117,6 +117,8 @@ class SummaryReporter:
         metrics_table.extend(self.report_segment_memory(stats))
         metrics_table.extend(self.report_segment_counts(stats))
 
+        metrics_table.extend(self.report_transform_stats(stats))
+
         for record in stats.op_metrics:
             task = record["task"]
             metrics_table.extend(self.report_throughput(record, task))
@@ -255,6 +257,19 @@ class SummaryReporter:
     def report_segment_counts(self, stats):
         return self.join(
             self.line("Segment count", "", stats.segment_count, "")
+        )
+
+    def report_transform_stats(self, stats):
+        if stats.transform_documents_processed is None or stats.transform_documents_processed == 0:
+            return []
+
+        return self.join(
+            self.line("Transform documents_processed", "", stats.transform_documents_processed, ""),
+            self.line("Transform documents_indexed", "", stats.transform_documents_indexed, ""),
+            self.line("Transform transform_search_time_in_ms", "", stats.transform_search_time_in_ms, ""),
+            self.line("Transform transform_index_time_in_ms", "", stats.transform_index_time_in_ms, ""),
+            self.line("Transform transform_index_failures", "", stats.transform_index_failures, ""),
+            self.line("Transform transform_search_failures", "", stats.transform_search_failures, "")
         )
 
     def join(self, *args):

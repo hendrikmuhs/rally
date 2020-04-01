@@ -442,6 +442,10 @@ class OperationType(Enum):
     RestoreSnapshot = 1021
     WaitForRecovery = 1022
     PutSettings = 1023
+    CreateTransform = 1024
+    StartTransform = 1025
+    StopTransform = 1026
+    DeleteTransform = 1027
 
     @property
     def admin_op(self):
@@ -507,6 +511,14 @@ class OperationType(Enum):
             return OperationType.WaitForRecovery
         elif v == "put-settings":
             return OperationType.PutSettings
+        elif v == "create-transform":
+            return OperationType.CreateTransform
+        elif v == "start-transform":
+            return OperationType.StartTransform
+        elif v == "stop-transform":
+            return OperationType.StopTransform
+        elif v == "delete-transform":
+            return OperationType.DeleteTransform
         else:
             raise KeyError("No enum value for [%s]" % v)
 

@@ -393,7 +393,8 @@ class Driver:
             telemetry.IndexStats(es_default, self.metrics_store),
             telemetry.MlBucketProcessingTime(es_default, self.metrics_store),
             telemetry.CcrStats(telemetry_params, es, self.metrics_store),
-            telemetry.RecoveryStats(telemetry_params, es, self.metrics_store)
+            telemetry.RecoveryStats(telemetry_params, es, self.metrics_store),
+            telemetry.TransformStats(telemetry_params, es, self.metrics_store)
         ])
 
     def wait_for_rest_api(self, es):
